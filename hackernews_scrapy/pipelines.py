@@ -6,7 +6,7 @@ from scrapy import log
 import pymongo
 
 
-class ValidateItemPipeline(object):
+class ValidateArticlePipeline(object):
     def process_item(self, item, spider):
         title = item['title']
         if 'python' in title.lower():
