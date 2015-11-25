@@ -3,4 +3,5 @@ import scrapy
 
 
 class HackernewsScrapyItem(scrapy.Item):
-	title = scrapy.Field()
+    title = scrapy.Field()
+    crawled_at = scrapy.Field()
