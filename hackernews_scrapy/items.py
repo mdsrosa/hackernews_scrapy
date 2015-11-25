@@ -5,3 +5,4 @@ import scrapy
 class HackernewsScrapyItem(scrapy.Item):
     title = scrapy.Field()
     url = scrapy.Field()
+    crawled_at = scrapy.Field(serializer=str)
