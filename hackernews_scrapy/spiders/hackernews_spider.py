@@ -1,8 +1,8 @@
 from scrapy.spiders import CrawlSpider
-from scrapy.spiders import Rule
 from scrapy.linkextractors import LinkExtractor
-from hackernews_scrapy.items import HackernewsScrapyItem
+from hackernews_scrapy.items import ArticleItem
 from scrapy.selector import Selector
+from scrapy.spiders import Rule
 
 import datetime
 
@@ -32,7 +32,7 @@ class HackernewsCrawlSpider(CrawlSpider):
             if title and url:
                 title, url = title[0], url[0]
 
-                item = HackernewsScrapyItem()
+                item = ArticleItem()
                 item['title'] = title
                 item['url'] = url
                 item['crawled_at'] = datetime.datetime.utcnow()

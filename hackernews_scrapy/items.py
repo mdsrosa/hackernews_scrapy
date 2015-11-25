@@ -2,7 +2,7 @@
 import scrapy
 
 
-class HackernewsScrapyItem(scrapy.Item):
+class ArticleItem(scrapy.Item):
     title = scrapy.Field()
     url = scrapy.Field()
     crawled_at = scrapy.Field(serializer=str)
