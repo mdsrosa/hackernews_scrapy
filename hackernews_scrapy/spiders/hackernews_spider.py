@@ -4,13 +4,15 @@ from scrapy.linkextractors import LinkExtractor
 from hackernews_scrapy.items import HackernewsScrapyItem
 from scrapy.selector import Selector
 
+import datetime
+
 
 class HackernewsCrawlSpider(CrawlSpider):
     name = 'pythonhackernews'
     allowed_hosts = ['news.ycombinator.com']
     start_urls = ['https://news.ycombinator.com/news?p=1']
 
-    rules = (Rule(LinkExtractor(allow=r'news\?p=[0-2]'),
+    rules = (Rule(LinkExtractor(allow=r'news\?p=[0-9]'),
                   callback="parse_item",
                   follow=True),)
 
@@ -30,11 +32,10 @@ class HackernewsCrawlSpider(CrawlSpider):
             if title and url:
                 title, url = title[0], url[0]
 
-                if 'python' in title.lower():
+                item = HackernewsScrapyItem()
+                item['title'] = title
+                item['url'] = url
+                item['crawled_at'] = datetime.datetime.utcnow()
 
-                    item = HackernewsScrapyItem()
-                    item['title'] = title
-                    item['url'] = url
-
-                    items.append(item)
+                items.append(item)
         return items
