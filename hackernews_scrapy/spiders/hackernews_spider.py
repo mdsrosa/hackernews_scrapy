@@ -1,26 +1,40 @@
-from scrapy.spiders import Spider
+from scrapy.spiders import CrawlSpider
+from scrapy.spiders import Rule
+from scrapy.linkextractors import LinkExtractor
 from hackernews_scrapy.items import HackernewsScrapyItem
 from scrapy.selector import Selector
 
-import datetime
 
-
-class HackernewsSpider(Spider):
+class HackernewsCrawlSpider(CrawlSpider):
     name = 'pythonhackernews'
     allowed_hosts = ['news.ycombinator.com']
-    start_urls = ['https://news.ycombinator.com']
+    start_urls = ['https://news.ycombinator.com/news?p=1']
 
-    def parse(self, response):
-        """Parse the HTML to get the information we need"""
-        html_xpath_selector = Selector(response)
-        titles = html_xpath_selector.xpath(
-            '//td[@class="title"]/a/text()').extract()
+    rules = (Rule(LinkExtractor(allow=r'news\?p=[0-2]'),
+                  callback="parse_item",
+                  follow=True),)
 
-        titles = filter(lambda t: 'python' in t.lower(), titles)
+    def parse_item(self, response):
+        """
+            Parse the HTML to get the information we need
+        """
 
-        for title in titles:
-            item = HackernewsScrapyItem()
-            item['title'] = title
-            item['crawled_at'] = datetime.datetime.utcnow()
+        selector = Selector(response)
+        links = selector.xpath('//td[@class="title"]')
+        items = []
 
-            yield item
+        for link in links:
+            title = link.xpath("a/text()").extract()
+            url = link.xpath("a/@href").extract()
+
+            if title and url:
+                title, url = title[0], url[0]
+
+                if 'python' in title.lower():
+
+                    item = HackernewsScrapyItem()
+                    item['title'] = title
+                    item['url'] = url
+
+                    items.append(item)
+        return items
